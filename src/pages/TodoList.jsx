@@ -1,25 +1,25 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
-import { Plus, Trash2, CheckSquare, Filter, Tag, Calendar } from 'lucide-react'
+import { Plus, Trash2, CheckSquare, Filter, Calendar } from 'lucide-react'
 
 const STATUSES = [
-  { value: 'todo', label: 'To Do', color: 'bg-gray-100 text-gray-600' },
-  { value: 'in_progress', label: 'In Progress', color: 'bg-blue-100 text-blue-700' },
-  { value: 'review', label: 'Review', color: 'bg-yellow-100 text-yellow-700' },
-  { value: 'done', label: 'Done', color: 'bg-green-100 text-green-700' },
-  { value: 'blocked', label: 'Blocked', color: 'bg-red-100 text-red-600' },
+  { value: 'todo', label: 'To Do', color: 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300' },
+  { value: 'in_progress', label: 'In Progress', color: 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' },
+  { value: 'review', label: 'Review', color: 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300' },
+  { value: 'done', label: 'Done', color: 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' },
+  { value: 'blocked', label: 'Blocked', color: 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-300' },
 ]
 
 const PRIORITIES = [
-  { value: 'low', label: 'Low', color: 'text-gray-400' },
-  { value: 'medium', label: 'Medium', color: 'text-yellow-500' },
-  { value: 'high', label: 'High', color: 'text-red-500' },
+  { value: 'low', label: 'Low', color: 'text-gray-400 dark:text-gray-500' },
+  { value: 'medium', label: 'Medium', color: 'text-yellow-500 dark:text-yellow-400' },
+  { value: 'high', label: 'High', color: 'text-red-500 dark:text-red-400' },
 ]
 
 function StatusBadge({ status }) {
   const s = STATUSES.find(s => s.value === status) || STATUSES[0]
-  return <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${s.color}`}>{s.label}</span>
+  return <span className={`text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${s.color}`}>{s.label}</span>
 }
 
 export default function TodoList() {
@@ -80,28 +80,28 @@ export default function TodoList() {
   const priorityColor = (p) => PRIORITIES.find(x => x.value === p)?.color || 'text-gray-400'
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-4xl mx-auto page-enter">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-5 sm:mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">To-Do List</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{todos.length} tasks total</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-gray-100">Task <span className="gradient-text">Manager</span></h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Track tasks, set priorities, ship features.</p>
         </div>
-        <button onClick={() => setAdding(true)} className="btn-primary">
+        <button onClick={() => setAdding(true)} className="btn-primary text-sm">
           <Plus className="w-4 h-4" />
-          Add Task
+          <span>Add Task</span>
         </button>
       </div>
 
-      {/* Status summary */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+      {/* Status summary — horizontally scrollable on small screens */}
+      <div className="flex gap-2 sm:grid sm:grid-cols-3 md:grid-cols-5 overflow-x-auto pb-1 mb-5 sm:mb-6 -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible scrollbar-hide">
         {STATUSES.map(s => (
           <button
             key={s.value}
             onClick={() => setFilterStatus(filterStatus === s.value ? 'all' : s.value)}
-            className={`card p-3 text-left transition-all hover:shadow-md ${filterStatus === s.value ? 'ring-2 ring-primary-400' : ''}`}
+            className={`card p-3 text-left transition-all hover:shadow-md flex-shrink-0 w-28 sm:w-auto ${filterStatus === s.value ? 'ring-2 ring-primary-400' : ''}`}
           >
-            <p className="text-xl font-bold text-gray-900">{counts[s.value] || 0}</p>
+            <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{counts[s.value] || 0}</p>
             <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${s.color}`}>{s.label}</span>
           </button>
         ))}
@@ -109,8 +109,8 @@ export default function TodoList() {
 
       {/* Add form */}
       {adding && (
-        <div className="card mb-6 border-primary-200 bg-primary-50/30">
-          <h3 className="font-semibold text-gray-900 mb-4">New Task</h3>
+        <div className="card mb-5 sm:mb-6 border-primary-200 dark:border-primary-800 bg-primary-50/30 dark:bg-primary-900/10">
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">New Task</h3>
           <div className="space-y-3">
             <input
               autoFocus
@@ -127,21 +127,21 @@ export default function TodoList() {
               className="textarea"
               rows={2}
             />
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">Status</label>
+                <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Status</label>
                 <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))} className="input">
                   {STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">Priority</label>
+                <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Priority</label>
                 <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value }))} className="input">
                   {PRIORITIES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">Due Date</label>
+                <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Due Date</label>
                 <input
                   type="date"
                   value={form.due_date}
@@ -154,7 +154,10 @@ export default function TodoList() {
               <button onClick={addTodo} disabled={saving || !form.title.trim()} className="btn-primary">
                 {saving ? 'Saving...' : 'Add Task'}
               </button>
-              <button onClick={() => { setAdding(false); setForm({ title: '', description: '', status: 'todo', priority: 'medium', due_date: '' }) }} className="btn-secondary">
+              <button
+                onClick={() => { setAdding(false); setForm({ title: '', description: '', status: 'todo', priority: 'medium', due_date: '' }) }}
+                className="btn-secondary"
+              >
                 Cancel
               </button>
             </div>
@@ -163,12 +166,16 @@ export default function TodoList() {
       )}
 
       {/* Filter bar */}
-      <div className="flex items-center gap-2 mb-4">
-        <Filter className="w-4 h-4 text-gray-400" />
-        <span className="text-sm text-gray-500">Filter:</span>
+      <div className="flex items-center gap-2 mb-4 flex-wrap">
+        <Filter className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+        <span className="text-sm text-gray-500 dark:text-gray-400">Filter:</span>
         <button
           onClick={() => setFilterStatus('all')}
-          className={`text-xs px-2.5 py-1 rounded-full font-medium transition-colors ${filterStatus === 'all' ? 'bg-primary-100 text-primary-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+          className={`text-xs px-2.5 py-1 rounded-full font-medium transition-colors ${
+            filterStatus === 'all'
+              ? 'bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+          }`}
         >
           All ({todos.length})
         </button>
@@ -176,7 +183,11 @@ export default function TodoList() {
           <button
             key={s.value}
             onClick={() => setFilterStatus(s.value)}
-            className={`text-xs px-2.5 py-1 rounded-full font-medium transition-colors ${filterStatus === s.value ? 'bg-primary-100 text-primary-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+            className={`text-xs px-2.5 py-1 rounded-full font-medium transition-colors ${
+              filterStatus === s.value
+                ? 'bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+            }`}
           >
             {s.label} ({counts[s.value] || 0})
           </button>
@@ -190,8 +201,8 @@ export default function TodoList() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="card text-center py-12">
-          <CheckSquare className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-          <p className="text-gray-400">
+          <CheckSquare className="w-12 h-12 text-gray-200 dark:text-gray-600 mx-auto mb-3" />
+          <p className="text-gray-400 dark:text-gray-500 text-sm">
             {filterStatus === 'all' ? 'No tasks yet. Add your first task!' : `No tasks with status "${STATUSES.find(s => s.value === filterStatus)?.label}"`}
           </p>
         </div>
@@ -200,42 +211,42 @@ export default function TodoList() {
           {filtered.map(todo => (
             <div
               key={todo.id}
-              className={`card py-4 flex items-start gap-4 transition-all hover:shadow-md ${todo.status === 'done' ? 'opacity-70' : ''}`}
+              className={`card py-3 sm:py-4 px-4 sm:px-6 flex items-start gap-3 transition-all hover:shadow-md ${todo.status === 'done' ? 'opacity-60' : ''}`}
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
                   <StatusBadge status={todo.status} />
                   <span className={`text-xs font-medium ${priorityColor(todo.priority)}`}>
-                    {PRIORITIES.find(p => p.value === todo.priority)?.label} priority
+                    {PRIORITIES.find(p => p.value === todo.priority)?.label}
                   </span>
                   {todo.due_date && (
-                    <span className="text-xs text-gray-400 flex items-center gap-1">
+                    <span className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
-                      Due {new Date(todo.due_date).toLocaleDateString()}
+                      {new Date(todo.due_date).toLocaleDateString()}
                     </span>
                   )}
                 </div>
-                <p className={`font-medium text-gray-900 ${todo.status === 'done' ? 'line-through text-gray-400' : ''}`}>
+                <p className={`font-medium text-sm sm:text-base ${todo.status === 'done' ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-900 dark:text-gray-100'}`}>
                   {todo.title}
                 </p>
                 {todo.description && (
-                  <p className="text-sm text-gray-500 mt-1">{todo.description}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{todo.description}</p>
                 )}
-                <p className="text-xs text-gray-400 mt-2">
-                  Created {new Date(todo.created_at).toLocaleDateString()}
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5">
+                  {new Date(todo.created_at).toLocaleDateString()}
                 </p>
               </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
                 <select
                   value={todo.status}
                   onChange={e => updateStatus(todo.id, e.target.value)}
-                  className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-primary-400"
+                  className="text-xs border border-gray-200 dark:border-gray-600 rounded-lg px-1.5 sm:px-2 py-1.5 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-primary-400 max-w-[90px] sm:max-w-none"
                 >
                   {STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                 </select>
                 <button
                   onClick={() => deleteTodo(todo.id)}
-                  className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                  className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors flex-shrink-0"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

@@ -98,28 +98,30 @@ export default function Journal() {
   const toggleExpand = (id) => setExpanded(e => ({ ...e, [id]: !e[id] }))
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-4xl mx-auto page-enter">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-5 sm:mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Developer Journal</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Document your daily progress and learnings</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-gray-100">Dev <span className="gradient-text">Journal</span></h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Reflect, document wins, and grow every day.</p>
         </div>
         {!adding && (
-          <button onClick={() => setAdding(true)} className="btn-primary">
+          <button onClick={() => setAdding(true)} className="btn-primary text-sm">
             <Plus className="w-4 h-4" />
-            New Entry
+            <span>New Entry</span>
           </button>
         )}
       </div>
 
       {/* Entry form */}
       {adding && (
-        <div className="card mb-6 border-purple-200 bg-purple-50/20">
+        <div className="card mb-5 sm:mb-6 border-purple-200 dark:border-purple-800 bg-purple-50/20 dark:bg-purple-900/10">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-900">{editing ? 'Edit Entry' : 'New Journal Entry'}</h3>
-            <button onClick={() => { setAdding(false); resetForm() }} className="p-1 hover:bg-gray-100 rounded-lg">
-              <X className="w-4 h-4 text-gray-500" />
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base">
+              {editing ? 'Edit Entry' : 'New Journal Entry'}
+            </h3>
+            <button onClick={() => { setAdding(false); resetForm() }} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+              <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
             </button>
           </div>
 
@@ -134,20 +136,20 @@ export default function Journal() {
 
             {/* Mood */}
             <div>
-              <label className="text-xs text-gray-500 mb-2 block">How are you feeling?</label>
-              <div className="flex gap-2">
+              <label className="text-xs text-gray-500 dark:text-gray-400 mb-2 block">How are you feeling?</label>
+              <div className="flex gap-2 overflow-x-auto pb-1">
                 {MOODS.map(m => (
                   <button
                     key={m.value}
                     onClick={() => setForm(f => ({ ...f, mood: m.value }))}
-                    className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl border transition-all ${
+                    className={`flex flex-col items-center gap-1 px-2.5 sm:px-3 py-2 rounded-xl border transition-all flex-shrink-0 ${
                       form.mood === m.value
-                        ? 'border-purple-400 bg-purple-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-purple-400 dark:border-purple-500 bg-purple-50 dark:bg-purple-900/30'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                     }`}
                   >
-                    <span className="text-xl">{m.emoji}</span>
-                    <span className="text-xs text-gray-600">{m.label}</span>
+                    <span className="text-lg sm:text-xl">{m.emoji}</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">{m.label}</span>
                   </button>
                 ))}
               </div>
@@ -155,7 +157,7 @@ export default function Journal() {
 
             {/* Tags */}
             <div>
-              <label className="text-xs text-gray-500 mb-2 block">Tags</label>
+              <label className="text-xs text-gray-500 dark:text-gray-400 mb-2 block">Tags</label>
               <div className="flex flex-wrap gap-1.5">
                 {TAGS.map(tag => (
                   <button
@@ -163,8 +165,8 @@ export default function Journal() {
                     onClick={() => toggleTag(tag)}
                     className={`text-xs px-2.5 py-1 rounded-full border font-medium transition-colors ${
                       form.tags.includes(tag)
-                        ? 'bg-purple-100 border-purple-300 text-purple-700'
-                        : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
+                        ? 'bg-purple-100 dark:bg-purple-900/40 border-purple-300 dark:border-purple-600 text-purple-700 dark:text-purple-300'
+                        : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500'
                     }`}
                   >
                     {tag}
@@ -178,12 +180,12 @@ export default function Journal() {
               value={form.content}
               onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
               className="textarea"
-              rows={5}
+              rows={4}
             />
 
-            <div className="grid md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">What went well?</label>
+                <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">What went well?</label>
                 <textarea
                   placeholder="Wins and achievements..."
                   value={form.what_went_well}
@@ -193,7 +195,7 @@ export default function Journal() {
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">What to improve?</label>
+                <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">What to improve?</label>
                 <textarea
                   placeholder="Areas to work on..."
                   value={form.what_to_improve}
@@ -211,7 +213,7 @@ export default function Journal() {
                 className="btn-primary"
               >
                 <Save className="w-4 h-4" />
-                {editing ? 'Update Entry' : 'Save Entry'}
+                {editing ? 'Update' : 'Save Entry'}
               </button>
               <button onClick={() => { setAdding(false); resetForm() }} className="btn-secondary">
                 Cancel
@@ -228,25 +230,25 @@ export default function Journal() {
         </div>
       ) : entries.length === 0 ? (
         <div className="card text-center py-12">
-          <BookOpen className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-          <p className="text-gray-400 mb-1">No journal entries yet</p>
-          <p className="text-sm text-gray-400">Start documenting your daily progress</p>
+          <BookOpen className="w-12 h-12 text-gray-200 dark:text-gray-600 mx-auto mb-3" />
+          <p className="text-gray-400 dark:text-gray-500 mb-1">No journal entries yet</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500">Start documenting your daily progress</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {entries.map(entry => {
             const mood = MOODS.find(m => m.value === entry.mood)
             const isExpanded = expanded[entry.id]
             return (
-              <div key={entry.id} className="card hover:shadow-md transition-all">
+              <div key={entry.id} className="card hover:shadow-md transition-all p-4 sm:p-6">
                 {/* Entry header */}
                 <div className="flex items-start gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       {mood && <span title={mood.label}>{mood.emoji}</span>}
-                      <p className="font-semibold text-gray-900">{entry.title}</p>
+                      <p className="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base">{entry.title}</p>
                     </div>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
                       {new Date(entry.created_at).toLocaleDateString('en-US', {
                         weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
                       })}
@@ -254,7 +256,7 @@ export default function Journal() {
                     {entry.tags?.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
                         {entry.tags.map(tag => (
-                          <span key={tag} className="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 rounded-full">
+                          <span key={tag} className="text-xs px-2 py-0.5 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full">
                             {tag}
                           </span>
                         ))}
@@ -262,39 +264,38 @@ export default function Journal() {
                     )}
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
-                    <button onClick={() => startEdit(entry)} className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors">
+                    <button onClick={() => startEdit(entry)} className="p-1.5 text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-lg transition-colors">
                       <Edit3 className="w-4 h-4" />
                     </button>
-                    <button onClick={() => deleteEntry(entry.id)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                    <button onClick={() => deleteEntry(entry.id)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors">
                       <Trash2 className="w-4 h-4" />
                     </button>
-                    <button onClick={() => toggleExpand(entry.id)} className="p-1.5 text-gray-400 hover:bg-gray-100 rounded-lg transition-colors">
+                    <button onClick={() => toggleExpand(entry.id)} className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
                       {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
 
-                {/* Preview or full content */}
                 {!isExpanded ? (
-                  <p className="text-sm text-gray-600 mt-3 line-clamp-2">{entry.content}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-3 line-clamp-2">{entry.content}</p>
                 ) : (
                   <div className="mt-4 space-y-4">
                     <div>
-                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">Notes</p>
-                      <p className="text-sm text-gray-700 whitespace-pre-wrap">{entry.content}</p>
+                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">Notes</p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{entry.content}</p>
                     </div>
                     {(entry.what_went_well || entry.what_to_improve) && (
-                      <div className="grid md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         {entry.what_went_well && (
-                          <div className="bg-green-50 rounded-xl p-3">
-                            <p className="text-xs font-medium text-green-700 uppercase tracking-wide mb-1.5">What went well</p>
-                            <p className="text-sm text-green-800 whitespace-pre-wrap">{entry.what_went_well}</p>
+                          <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-3">
+                            <p className="text-xs font-medium text-green-700 dark:text-green-400 uppercase tracking-wide mb-1.5">What went well</p>
+                            <p className="text-sm text-green-800 dark:text-green-300 whitespace-pre-wrap">{entry.what_went_well}</p>
                           </div>
                         )}
                         {entry.what_to_improve && (
-                          <div className="bg-orange-50 rounded-xl p-3">
-                            <p className="text-xs font-medium text-orange-700 uppercase tracking-wide mb-1.5">To improve</p>
-                            <p className="text-sm text-orange-800 whitespace-pre-wrap">{entry.what_to_improve}</p>
+                          <div className="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-3">
+                            <p className="text-xs font-medium text-orange-700 dark:text-orange-400 uppercase tracking-wide mb-1.5">To improve</p>
+                            <p className="text-sm text-orange-800 dark:text-orange-300 whitespace-pre-wrap">{entry.what_to_improve}</p>
                           </div>
                         )}
                       </div>
