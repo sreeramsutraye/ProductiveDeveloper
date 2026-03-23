@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /profile
+Disallow: /journal
+Disallow: /standup
+Allow: /
+
+Sitemap: https://productivedeveloper.vercel.app/sitemap.xml

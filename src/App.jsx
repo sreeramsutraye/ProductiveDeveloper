@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
+import ErrorBoundary from './components/ErrorBoundary'
 import Layout from './components/Layout'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
@@ -10,6 +11,7 @@ import Journal from './pages/Journal'
 import Profile from './pages/Profile'
 import HabitTracker from './pages/HabitTracker'
 import Standup from './pages/Standup'
+import NotFound from './pages/NotFound'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -35,7 +37,7 @@ function AppRoutes() {
         <Route path="standup" element={<Standup />} />
         <Route path="profile" element={<Profile />} />
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   )
 }
@@ -45,7 +47,9 @@ export default function App() {
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <AppRoutes />
+          <ErrorBoundary>
+            <AppRoutes />
+          </ErrorBoundary>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
