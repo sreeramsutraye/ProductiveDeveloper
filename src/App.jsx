@@ -11,6 +11,7 @@ import Journal from './pages/Journal'
 import Profile from './pages/Profile'
 import HabitTracker from './pages/HabitTracker'
 import Standup from './pages/Standup'
+import Breathe from './pages/Breathe'
 import NotFound from './pages/NotFound'
 
 function ProtectedRoute({ children }) {
@@ -35,6 +36,7 @@ function AppRoutes() {
         <Route path="journal" element={<Journal />} />
         <Route path="habits" element={<HabitTracker />} />
         <Route path="standup" element={<Standup />} />
+        <Route path="breathe" element={<Breathe />} />
         <Route path="profile" element={<Profile />} />
       </Route>
       <Route path="*" element={<NotFound />} />

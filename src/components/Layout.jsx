@@ -14,6 +14,7 @@ import {
   UserCircle,
   Flame,
   Mic,
+  Wind,
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -27,6 +28,7 @@ const mainNav = [
 
 const extraNav = [
   { to: '/pomodoro', icon: Timer, label: 'Pomodoro' },
+  { to: '/breathe',  icon: Wind,  label: 'Breathe'  },
 ]
 
 export default function Layout() {

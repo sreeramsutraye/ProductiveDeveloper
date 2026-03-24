@@ -11,12 +11,13 @@ import {
   Calendar,
   Flame,
   Mic,
+  Wind,
   Sparkles,
 } from 'lucide-react'
 
 export default function Dashboard() {
   const { user } = useAuth()
-  const [stats, setStats] = useState({ todos: 0, completedTodos: 0, journals: 0, pomodoroSessions: 0 })
+  const [stats, setStats] = useState({ todos: 0, completedTodos: 0, journals: 0, pomodoroSessions: 0, breatheSessions: 0 })
   const [recentTodos, setRecentTodos] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -29,10 +30,11 @@ export default function Dashboard() {
 
   useEffect(() => {
     async function load() {
-      const [todosRes, journalsRes, pomodoroRes] = await Promise.all([
+      const [todosRes, journalsRes, pomodoroRes, breatheRes] = await Promise.all([
         supabase.from('todos').select('id, title, status, created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(5),
         supabase.from('journal_entries').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
         supabase.from('pomodoro_sessions').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
+        supabase.from('breathe_sessions').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
       ])
       const todos = todosRes.data || []
       setRecentTodos(todos)
@@ -41,6 +43,7 @@ export default function Dashboard() {
         completedTodos: todos.filter(t => t.status === 'done').length,
         journals: journalsRes.count || 0,
         pomodoroSessions: pomodoroRes.count || 0,
+        breatheSessions: breatheRes.count || 0,
       })
       setLoading(false)
     }
@@ -79,6 +82,14 @@ export default function Dashboard() {
       gradient: 'from-orange-500 to-amber-500',
       bg: 'from-orange-50 to-amber-50 dark:from-orange-900/30 dark:to-amber-900/30',
       text: 'text-orange-700 dark:text-orange-300',
+    },
+    {
+      label: 'Breathe Sessions',
+      value: stats.breatheSessions,
+      icon: Wind,
+      gradient: 'from-cyan-500 to-teal-500',
+      bg: 'from-cyan-50 to-teal-50 dark:from-cyan-900/30 dark:to-teal-900/30',
+      text: 'text-cyan-700 dark:text-cyan-300',
     },
   ]
 
@@ -128,6 +139,15 @@ export default function Dashboard() {
       stat: `${stats.journals} entries`,
       badge: 'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300',
     },
+    {
+      to: '/breathe',
+      icon: Wind,
+      label: 'Breathe',
+      desc: 'Guided breathing to reset your focus and calm your mind',
+      color: 'bg-cyan-50 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400',
+      stat: `${stats.breatheSessions} sessions`,
+      badge: 'bg-cyan-100 dark:bg-cyan-900/50 text-cyan-700 dark:text-cyan-300',
+    },
   ]
 
   const statusColors = {
@@ -161,7 +181,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
         {statCards.map(({ label, value, icon: Icon, gradient, bg, text }) => (
           <div key={label} className={`rounded-2xl p-4 sm:p-5 bg-gradient-to-br ${bg} border border-transparent transition-transform duration-200 hover:-translate-y-0.5`}>
             <div className={`inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br ${gradient} mb-3 shadow-sm`}>
@@ -176,7 +196,7 @@ export default function Dashboard() {
       {/* Tools */}
       <div className="flex items-center justify-between mb-3 sm:mb-4">
         <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">Your Tools</h2>
-        <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">{tools.length} tools available</span>
+        <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">{tools.length} tools</span>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-8">
         {tools.map(({ to, icon: Icon, label, desc, color, stat, badge }) => (
