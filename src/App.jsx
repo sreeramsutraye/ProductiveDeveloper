@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
 import ErrorBoundary from './components/ErrorBoundary'
+import ProfileSetup from './components/ProfileSetup'
 import Layout from './components/Layout'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
@@ -12,16 +13,27 @@ import Profile from './pages/Profile'
 import HabitTracker from './pages/HabitTracker'
 import Standup from './pages/Standup'
 import Breathe from './pages/Breathe'
+import Friends from './pages/Friends'
+import UserProfile from './pages/UserProfile'
 import NotFound from './pages/NotFound'
 
 function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth()
-  if (loading) return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
-    </div>
-  )
-  return user ? children : <Navigate to="/login" replace />
+  const { user, loading, profile, profileLoading } = useAuth()
+
+  if (loading || (user && profileLoading)) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  if (!user) return <Navigate to="/login" replace />
+
+  // Profile gate: first-time setup
+  if (!profile) return <ProfileSetup />
+
+  return children
 }
 
 function AppRoutes() {
@@ -37,6 +49,8 @@ function AppRoutes() {
         <Route path="habits" element={<HabitTracker />} />
         <Route path="standup" element={<Standup />} />
         <Route path="breathe" element={<Breathe />} />
+        <Route path="friends" element={<Friends />} />
+        <Route path="users/:userId" element={<UserProfile />} />
         <Route path="profile" element={<Profile />} />
       </Route>
       <Route path="*" element={<NotFound />} />

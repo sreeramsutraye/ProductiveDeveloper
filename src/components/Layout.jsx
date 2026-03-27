@@ -1,6 +1,7 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
+import { supabase } from '../lib/supabase'
 import {
   LayoutDashboard,
   Timer,
@@ -15,34 +16,47 @@ import {
   Flame,
   Mic,
   Wind,
+  Users,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const mainNav = [
-  { to: '/', icon: LayoutDashboard, label: 'Dashboard', end: true },
-  { to: '/habits', icon: Flame, label: 'Habits' },
-  { to: '/standup', icon: Mic, label: 'Standup' },
-  { to: '/todos', icon: CheckSquare, label: 'Todos' },
-  { to: '/journal', icon: BookOpen, label: 'Journal' },
+  { to: '/',        icon: LayoutDashboard, label: 'Dashboard', end: true },
+  { to: '/habits',  icon: Flame,           label: 'Habits' },
+  { to: '/standup', icon: Mic,             label: 'Standup' },
+  { to: '/todos',   icon: CheckSquare,     label: 'Todos' },
+  { to: '/friends', icon: Users,           label: 'Friends' },
 ]
 
 const extraNav = [
-  { to: '/pomodoro', icon: Timer, label: 'Pomodoro' },
-  { to: '/breathe',  icon: Wind,  label: 'Breathe'  },
+  { to: '/journal',  icon: BookOpen, label: 'Journal'  },
+  { to: '/pomodoro', icon: Timer,    label: 'Pomodoro' },
+  { to: '/breathe',  icon: Wind,     label: 'Breathe'  },
 ]
 
 export default function Layout() {
-  const { user, signOut } = useAuth()
+  const { user, profile, signOut } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [pendingCount, setPendingCount] = useState(0)
+
+  useEffect(() => {
+    if (!user) return
+    supabase
+      .from('friendships')
+      .select('id', { count: 'exact', head: true })
+      .eq('addressee', user.id)
+      .eq('status', 'pending')
+      .then(({ count }) => setPendingCount(count || 0))
+  }, [user])
 
   const handleSignOut = async () => {
     await signOut()
     navigate('/login')
   }
 
-  const NavItem = ({ to, icon: Icon, label, end }) => (
+  const NavItem = ({ to, icon: Icon, label, end, badge }) => (
     <NavLink
       to={to}
       end={end}
@@ -57,7 +71,14 @@ export default function Layout() {
     >
       {({ isActive }) => (
         <>
-          <Icon className={`w-5 h-5 flex-shrink-0 transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : ''}`} />
+          <span className="relative flex-shrink-0">
+            <Icon className={`w-5 h-5 transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : ''}`} />
+            {badge > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center leading-none">
+                {badge > 9 ? '9+' : badge}
+              </span>
+            )}
+          </span>
           {label}
           {isActive && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-primary-500 dark:bg-primary-400" />}
         </>
@@ -80,9 +101,11 @@ export default function Layout() {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-        {mainNav.map(item => <NavItem key={item.to} {...item} />)}
+        {mainNav.map(item => (
+          <NavItem key={item.to} {...item} badge={item.to === '/friends' ? pendingCount : 0} />
+        ))}
         <div className="pt-3 mt-2 border-t border-gray-100 dark:border-gray-700">
-          {extraNav.map(item => <NavItem key={item.to} {...item} />)}
+          {extraNav.map(item => <NavItem key={item.to} {...item} badge={0} />)}
         </div>
       </nav>
 
@@ -106,15 +129,17 @@ export default function Layout() {
           }
         >
           <img
-            src={user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.email || 'U')}&background=7c3aed&color=fff`}
+            src={profile?.avatar_url || user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.display_name || user?.email || 'U')}&background=7c3aed&color=fff`}
             alt="Avatar"
-            className="w-8 h-8 rounded-full flex-shrink-0 ring-2 ring-primary-200 dark:ring-primary-800"
+            className="w-8 h-8 rounded-full flex-shrink-0 ring-2 ring-primary-200 dark:ring-primary-800 object-cover"
           />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-              {user?.user_metadata?.full_name || user?.email?.split('@')[0]}
+              {profile?.display_name || user?.email?.split('@')[0]}
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+            <p className="text-xs text-primary-600 dark:text-primary-400 truncate">
+              {profile?.username ? `@${profile.username}` : user?.email}
+            </p>
           </div>
           <UserCircle className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
         </NavLink>
@@ -173,7 +198,7 @@ export default function Layout() {
             to={to}
             end={end}
             className={({ isActive }) =>
-              `flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] sm:text-xs font-medium transition-colors min-w-0 ${
+              `flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] sm:text-xs font-medium transition-colors min-w-0 relative ${
                 isActive
                   ? 'text-primary-600 dark:text-primary-400'
                   : 'text-gray-500 dark:text-gray-400'
@@ -182,7 +207,14 @@ export default function Layout() {
           >
             {({ isActive }) => (
               <>
-                <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-primary-600 dark:text-primary-400' : ''}`} />
+                <span className="relative">
+                  <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-primary-600 dark:text-primary-400' : ''}`} />
+                  {to === '/friends' && pendingCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">
+                      {pendingCount > 9 ? '9+' : pendingCount}
+                    </span>
+                  )}
+                </span>
                 <span className="truncate w-full text-center px-0.5">{label}</span>
                 {isActive && <span className="absolute bottom-1 w-1 h-1 rounded-full bg-primary-500 dark:bg-primary-400" />}
               </>

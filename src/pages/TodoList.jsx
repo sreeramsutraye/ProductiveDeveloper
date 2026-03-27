@@ -130,13 +130,13 @@ export default function TodoList() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Status</label>
-                <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))} className="input">
+                <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))} className="select">
                   {STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                 </select>
               </div>
               <div>
                 <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Priority</label>
-                <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value }))} className="input">
+                <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value }))} className="select">
                   {PRIORITIES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
                 </select>
               </div>
@@ -240,7 +240,7 @@ export default function TodoList() {
                 <select
                   value={todo.status}
                   onChange={e => updateStatus(todo.id, e.target.value)}
-                  className="text-xs border border-gray-200 dark:border-gray-600 rounded-lg px-1.5 sm:px-2 py-1.5 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-primary-400 max-w-[90px] sm:max-w-none"
+                  className="select text-xs py-1.5 max-w-[90px] sm:max-w-[130px]"
                 >
                   {STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                 </select>
