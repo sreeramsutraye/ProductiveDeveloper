@@ -14,6 +14,7 @@ import {
   Wind,
   Sparkles,
 } from 'lucide-react'
+import FunFact from '../components/FunFact'
 
 export default function Dashboard() {
   const { user } = useAuth()
@@ -242,6 +243,8 @@ export default function Dashboard() {
           </div>
         </>
       )}
+
+      <FunFact />
     </div>
   )
 }
